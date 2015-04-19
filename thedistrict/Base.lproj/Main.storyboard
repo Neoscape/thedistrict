@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7531" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7520"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ViewController" id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -15,8 +15,81 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="d6L-hR-baf">
+                                <rect key="frame" x="126" y="205" width="348" height="190"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MvN-rv-WC9">
+                                        <rect key="frame" x="20" y="20" width="150" height="150"/>
+                                        <color key="backgroundColor" red="0.32156862749999998" green="0.69411764710000001" blue="0.42745098040000001" alpha="1" colorSpace="calibratedRGB"/>
+                                        <state key="normal" title="Movie">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="playMovie:" destination="BYZ-38-t0r" eventType="touchUpInside" id="UPc-6Y-zzL"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VN2-CD-oNd">
+                                        <rect key="frame" x="178" y="20" width="150" height="150"/>
+                                        <color key="backgroundColor" red="0.3921568627" green="0.65490196079999996" blue="0.83137254900000002" alpha="1" colorSpace="calibratedRGB"/>
+                                        <state key="normal" title="Gallery">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="loadGallery:" destination="BYZ-38-t0r" eventType="touchUpInside" id="9ag-pi-CMM"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="190" id="JZr-se-SRf"/>
+                                    <constraint firstAttribute="width" constant="348" id="UZw-aa-Gl8"/>
+                                </constraints>
+                            </view>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="B1v-GQ-wbS">
+                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
+                                <subviews>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="v5L-Vk-HM5">
+                                        <rect key="frame" x="50" y="56" width="500" height="31"/>
+                                    </slider>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bordered" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="tXs-tj-xQw">
+                                        <rect key="frame" x="85" y="478" width="430" height="29"/>
+                                        <segments>
+                                            <segment title="First"/>
+                                            <segment title="Second"/>
+                                            <segment title="Third"/>
+                                            <segment title="Fourth"/>
+                                        </segments>
+                                        <connections>
+                                            <action selector="movieShouldJump:" destination="BYZ-38-t0r" eventType="valueChanged" id="ohy-wt-RX9"/>
+                                        </connections>
+                                    </segmentedControl>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="v5L-Vk-HM5" firstAttribute="top" secondItem="B1v-GQ-wbS" secondAttribute="top" constant="56" id="3xG-MX-ggR"/>
+                                    <constraint firstAttribute="bottom" secondItem="tXs-tj-xQw" secondAttribute="bottom" constant="74" id="89g-H9-B4N"/>
+                                    <constraint firstItem="v5L-Vk-HM5" firstAttribute="leading" secondItem="B1v-GQ-wbS" secondAttribute="leading" constant="52" id="FAi-35-zPw"/>
+                                    <constraint firstAttribute="trailing" secondItem="tXs-tj-xQw" secondAttribute="trailing" constant="85" id="Yrt-HR-JNl"/>
+                                    <constraint firstItem="tXs-tj-xQw" firstAttribute="leading" secondItem="B1v-GQ-wbS" secondAttribute="leading" constant="85" id="mGU-c1-hCh"/>
+                                    <constraint firstAttribute="trailing" secondItem="v5L-Vk-HM5" secondAttribute="trailing" constant="52" id="sDp-Zo-0Qf"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="B1v-GQ-wbS" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="1II-xS-ZMc"/>
+                            <constraint firstAttribute="trailing" secondItem="B1v-GQ-wbS" secondAttribute="trailing" id="6bS-wf-yN7"/>
+                            <constraint firstAttribute="centerX" secondItem="d6L-hR-baf" secondAttribute="centerX" id="WYw-yL-4eu"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="B1v-GQ-wbS" secondAttribute="bottom" id="abK-xN-UYa"/>
+                            <constraint firstItem="B1v-GQ-wbS" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="sSL-Zo-NxB"/>
+                            <constraint firstAttribute="centerY" secondItem="d6L-hR-baf" secondAttribute="centerY" id="ysn-gv-d5s"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="movieBtns" destination="tXs-tj-xQw" id="UlO-9x-f2k"/>
+                        <outlet property="uisl_timerBar" destination="v5L-Vk-HM5" id="J6W-vu-ver"/>
+                        <outlet property="uiv_myPlayerContainer" destination="B1v-GQ-wbS" id="vYX-dg-6FO"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
