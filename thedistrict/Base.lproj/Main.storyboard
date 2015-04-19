@@ -65,6 +65,7 @@
                                         </connections>
                                     </segmentedControl>
                                 </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstItem="v5L-Vk-HM5" firstAttribute="top" secondItem="B1v-GQ-wbS" secondAttribute="top" constant="56" id="3xG-MX-ggR"/>
                                     <constraint firstAttribute="bottom" secondItem="tXs-tj-xQw" secondAttribute="bottom" constant="74" id="89g-H9-B4N"/>

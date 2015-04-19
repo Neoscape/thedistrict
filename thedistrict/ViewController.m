@@ -9,8 +9,9 @@
 #import "ViewController.h"
 #import "xhMediaViewController.h"
 #import "FGalleryViewController.h"
+#import "ATExternalScreenController.h"
 
-@interface ViewController () <xhMediaDelegate, FGalleryViewControllerDelegate, UIGestureRecognizerDelegate>
+@interface ViewController () <xhMediaDelegate, FGalleryViewControllerDelegate, UIGestureRecognizerDelegate, ATExternalScreenAwareController>
 {
     IBOutlet UISlider            *uisl_timerBar;
     
@@ -33,11 +34,40 @@
 
 static NSUInteger kFrameFixer = 1;
 
-@implementation ViewController
+@implementation ViewController {
+    ViewController *_doppelgangerViewController;
+}
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [[ATExternalScreenController sharedExternalScreenController] viewWillAppear:animated forViewController:self];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [[ATExternalScreenController sharedExternalScreenController] viewDidAppear:animated forViewController:self];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [[ATExternalScreenController sharedExternalScreenController] viewWillDisappear:animated forViewController:self];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [[ATExternalScreenController sharedExternalScreenController] viewDidDisappear:animated forViewController:self];
+}
+
+- (UIViewController *)doppelgangerViewController {
+    if (_doppelgangerViewController == nil) {
+        _doppelgangerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ViewController"];
+    }
+    return _doppelgangerViewController;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(screenDidDisconnect:) name:UIScreenDidDisconnectNotification object:nil];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -46,15 +76,68 @@ static NSUInteger kFrameFixer = 1;
     self.myAVPlayerLayer.frame = self.uiv_myPlayerContainer.bounds;
 }
 
+-(void)screenDidDisconnect:(NSNotification*)c
+{
+    _doppelgangerViewController=nil;
+}
+
 #pragma mark - menu actions
 -(void)playMovie:(id)sender
 {
-    _uiv_myPlayerContainer.hidden = NO;
-    NSString *url = [[NSBundle mainBundle] pathForResource:@"Trademark_VictoryPark_FinalCut_040114_for_mac_HD_HD" ofType:@"mov"];
-    [self createMainAVPlayer:url];
-    [self addGestureToAvPlayer];
-//    //[self.view addSubview: _uiv_myPlayerContainer];
-    [_myAVPlayer play];
+    // DISTRICT_AERIAL_for_EB_AFTER.mov
+    // Trademark_VictoryPark_FinalCut_040114_for_mac_HD_HD
+    NSString *url = [[NSBundle mainBundle] pathForResource:@"DISTRICT_AERIAL_for_EB_AFTER" ofType:@"mov"];
+
+    if (_doppelgangerViewController) {
+        
+        if (_doppelgangerViewController.myAVPlayer) {
+            [_doppelgangerViewController.myAVPlayerLayer removeFromSuperlayer];
+            _doppelgangerViewController.myAVPlayerLayer = nil;
+            _doppelgangerViewController.myAVPlayer = nil;
+        }
+        
+        _doppelgangerViewController.myAVPlayer = [AVPlayer playerWithURL:[NSURL fileURLWithPath:url]] ;
+        _doppelgangerViewController.myAVPlayerLayer = [AVPlayerLayer playerLayerWithPlayer:_doppelgangerViewController.myAVPlayer];
+        
+        _doppelgangerViewController.myAVPlayerLayer.frame = _doppelgangerViewController.view.window.bounds;
+        _doppelgangerViewController.myAVPlayerLayer.backgroundColor = [UIColor blackColor].CGColor;
+        [_doppelgangerViewController.view.layer addSublayer:_doppelgangerViewController.myAVPlayerLayer];
+        
+        [_doppelgangerViewController.myAVPlayer play];
+        _doppelgangerViewController.myAVPlayer.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(playerItemDidReachEnd:)
+                                                     name:AVPlayerItemDidPlayToEndTimeNotification
+                                                   object:[_doppelgangerViewController.myAVPlayer currentItem]];
+    } else {
+        
+        _uiv_myPlayerContainer.hidden = NO;
+        [self createMainAVPlayer:url];
+        [self addGestureToAvPlayer];
+        [_myAVPlayer play];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(playerItemDidReachEnd:)
+                                                     name:AVPlayerItemDidPlayToEndTimeNotification
+                                                   object:[_myAVPlayer currentItem]];
+
+    }
+}
+
+- (void)playerItemDidReachEnd:(NSNotification*)n
+{
+    NSLog(@"didRemoveFromSuperView");
+    _uiv_myPlayerContainer.hidden = YES;
+    [_myAVPlayerLayer removeFromSuperlayer];
+    _myAVPlayerLayer = nil;
+    _myAVPlayer = nil;
+    _playerItem = nil;
+    
+    if (_doppelgangerViewController.myAVPlayer) {
+        [_doppelgangerViewController.myAVPlayerLayer removeFromSuperlayer];
+        _doppelgangerViewController.myAVPlayerLayer = nil;
+        _doppelgangerViewController.myAVPlayer = nil;
+    }
 }
 
 -(IBAction)loadGallery:(id)sender {
@@ -72,13 +155,19 @@ static NSUInteger kFrameFixer = 1;
                    @"Simon_Clearfork_View_10_2015_04_10.jpg",
                    nil];
     localGallery = [[FGalleryViewController alloc] initWithPhotoSource:self];
-    UINavigationController*_navigationController = [[UINavigationController alloc]
-                             initWithRootViewController:localGallery];
-    _navigationController.view.frame = [self.view bounds];
-    [self addChildViewController: _navigationController];
-    [_navigationController setNavigationBarHidden:YES];
+    localGallery.view.frame = self.view.bounds;
     
-    [self.view addSubview:_navigationController.view];
+    // works but no nav bar
+    [self at_presentViewController:localGallery animated:YES completion:^{}];
+    
+    
+    /* nav bar but not on external screen
+    UINavigationController*_navigationController = [[UINavigationController alloc]
+                                                    initWithRootViewController:localGallery];
+    _navigationController.view.frame = [self.view bounds];
+    [_navigationController setNavigationBarHidden:YES];
+    [self at_presentViewController:_navigationController animated:YES completion:^{}];
+     */
 }
 
 
@@ -325,27 +414,20 @@ static NSUInteger kFrameFixer = 1;
 
 - (FGalleryPhotoSourceType)photoGallery:(FGalleryViewController *)gallery sourceTypeForPhotoAtIndex:(NSUInteger)index
 {
-    if( gallery == localGallery ) {
-        return FGalleryPhotoSourceTypeLocal;
-    }
-    else return FGalleryPhotoSourceTypeNetwork;
+    return FGalleryPhotoSourceTypeLocal;
 }
 
 - (NSString*)photoGallery:(FGalleryViewController *)gallery captionForPhotoAtIndex:(NSUInteger)index
 {
-    NSString *caption;
-    if( gallery == localGallery ) {
-        caption = [localCaptions objectAtIndex:index];
-    }
-    //    else if( gallery == networkGallery ) {
-    //        caption = [networkCaptions objectAtIndex:index];
-    //    }
-    return caption;
+//    NSString *caption;
+//    caption = [localCaptions objectAtIndex:index];
+    return nil;
 }
 
 - (NSString*)photoGallery:(FGalleryViewController*)gallery filePathForPhotoSize:(FGalleryPhotoSize)size atIndex:(NSUInteger)index {
     return [localImages objectAtIndex:index];
 }
+
 
 - (void)handleTrashButtonTouch:(id)sender {
     // here we could remove images from our local array storage and tell the gallery to remove that image

@@ -34,6 +34,9 @@
 @property (nonatomic,readonly) UIButton *button;
 @property (nonatomic,readonly) UIActivityIndicatorView *activity;
 
+@property (nonatomic, strong) FGalleryPhotoView *doppelgangerView;
+- (void)syncToDoppelganger;
+
 @end
 
 

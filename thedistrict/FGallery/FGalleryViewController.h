@@ -10,8 +10,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "FGalleryPhotoView.h"
 #import "FGalleryPhoto.h"
-#import <MessageUI/MessageUI.h>
-//#import "embEmailData.h"
+
 
 typedef enum
 {
@@ -27,7 +26,7 @@ typedef enum
 
 @protocol FGalleryViewControllerDelegate;
 
-@interface FGalleryViewController : UIViewController <UIScrollViewDelegate,FGalleryPhotoDelegate,FGalleryPhotoViewDelegate, UIActionSheetDelegate> {
+@interface FGalleryViewController : UIViewController <UIScrollViewDelegate,FGalleryPhotoDelegate,FGalleryPhotoViewDelegate> {
 	
 	BOOL _isActive;
 	BOOL _isFullscreen;
@@ -37,7 +36,6 @@ typedef enum
 	UIStatusBarStyle _prevStatusStyle;
 	CGFloat _prevNextButtonSize;
 	CGRect _scrollerRect;
-	NSString *galleryID;
 	NSInteger _currentIndex;
 	
 	UIView *_container; // used as view for the controller
@@ -57,14 +55,17 @@ typedef enum
     
 	UIBarButtonItem *_nextButton;
 	UIBarButtonItem *_prevButton;
-    UIBarButtonItem *uib_share;
     
-    NSData          *data;
+    UIButton        *_uib_backButton;
+    UIButton        *_uib_seeAllButton;
+    
+    UIBarButtonItem *_uib_seeAllRightItem;
 }
 
 - (id)initWithPhotoSource:(NSObject<FGalleryViewControllerDelegate>*)photoSrc;
 - (id)initWithPhotoSource:(NSObject<FGalleryViewControllerDelegate>*)photoSrc barItems:(NSArray*)items;
 
+-(void)getBack;
 - (void)next;
 - (void)previous;
 - (void)gotoImageByIndex:(NSUInteger)index animated:(BOOL)animated;
@@ -74,7 +75,7 @@ typedef enum
 
 @property NSInteger currentIndex;
 @property NSInteger startingIndex;
-@property (nonatomic,assign) NSObject<FGalleryViewControllerDelegate> *photoSource;
+@property (nonatomic,weak) NSObject<FGalleryViewControllerDelegate> *photoSource;
 @property (nonatomic,readonly) UIToolbar *toolBar;
 @property (nonatomic,readonly) UIView* thumbsView;
 @property (nonatomic,retain) NSString *galleryID;

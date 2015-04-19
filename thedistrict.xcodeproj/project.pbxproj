@@ -17,9 +17,6 @@
 		8882F75C1AE3FE0E00F706F0 /* xhMediaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8882F75B1AE3FE0E00F706F0 /* xhMediaViewController.m */; };
 		8882F75E1AE3FF7B00F706F0 /* DISTRICT_AERIAL_for_EB_AFTER.mov in Resources */ = {isa = PBXBuildFile; fileRef = 8882F75D1AE3FF7B00F706F0 /* DISTRICT_AERIAL_for_EB_AFTER.mov */; };
 		8882F7601AE40F5300F706F0 /* Trademark_VictoryPark_FinalCut_040114_for_mac_HD_HD.mov in Resources */ = {isa = PBXBuildFile; fileRef = 8882F75F1AE40F5300F706F0 /* Trademark_VictoryPark_FinalCut_040114_for_mac_HD_HD.mov */; };
-		8882F76E1AE4111C00F706F0 /* FGalleryPhoto.m in Sources */ = {isa = PBXBuildFile; fileRef = 8882F7631AE4111C00F706F0 /* FGalleryPhoto.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		8882F76F1AE4111C00F706F0 /* FGalleryPhotoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8882F7651AE4111C00F706F0 /* FGalleryPhotoView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		8882F7701AE4111C00F706F0 /* FGalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8882F7671AE4111C00F706F0 /* FGalleryViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		8882F7711AE4111C00F706F0 /* photo-gallery-edit-caption.png in Resources */ = {isa = PBXBuildFile; fileRef = 8882F7681AE4111C00F706F0 /* photo-gallery-edit-caption.png */; };
 		8882F7721AE4111C00F706F0 /* photo-gallery-left.png in Resources */ = {isa = PBXBuildFile; fileRef = 8882F7691AE4111C00F706F0 /* photo-gallery-left.png */; };
 		8882F7731AE4111C00F706F0 /* photo-gallery-left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8882F76A1AE4111C00F706F0 /* photo-gallery-left@2x.png */; };
@@ -36,6 +33,10 @@
 		889AE2571AE4144500782F69 /* Simon_Clearfork_View_08_2015_04_10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 889AE24D1AE4144500782F69 /* Simon_Clearfork_View_08_2015_04_10.jpg */; };
 		889AE2581AE4144500782F69 /* Simon_Clearfork_View_09_2015_04_10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 889AE24E1AE4144500782F69 /* Simon_Clearfork_View_09_2015_04_10.jpg */; };
 		889AE2591AE4144500782F69 /* Simon_Clearfork_View_10_2015_04_10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 889AE24F1AE4144500782F69 /* Simon_Clearfork_View_10_2015_04_10.jpg */; };
+		889AE25C1AE4166000782F69 /* ATExternalScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = 889AE25B1AE4166000782F69 /* ATExternalScreenController.m */; };
+		889AE2631AE4613100782F69 /* FGalleryPhoto.m in Sources */ = {isa = PBXBuildFile; fileRef = 889AE25E1AE4613100782F69 /* FGalleryPhoto.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		889AE2641AE4613100782F69 /* FGalleryPhotoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 889AE2601AE4613100782F69 /* FGalleryPhotoView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		889AE2651AE4613100782F69 /* FGalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 889AE2621AE4613100782F69 /* FGalleryViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,12 +67,6 @@
 		8882F75B1AE3FE0E00F706F0 /* xhMediaViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = xhMediaViewController.m; sourceTree = "<group>"; };
 		8882F75D1AE3FF7B00F706F0 /* DISTRICT_AERIAL_for_EB_AFTER.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = DISTRICT_AERIAL_for_EB_AFTER.mov; sourceTree = "<group>"; };
 		8882F75F1AE40F5300F706F0 /* Trademark_VictoryPark_FinalCut_040114_for_mac_HD_HD.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = Trademark_VictoryPark_FinalCut_040114_for_mac_HD_HD.mov; sourceTree = "<group>"; };
-		8882F7621AE4111C00F706F0 /* FGalleryPhoto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FGalleryPhoto.h; path = FGallery/FGalleryPhoto.h; sourceTree = "<group>"; };
-		8882F7631AE4111C00F706F0 /* FGalleryPhoto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FGalleryPhoto.m; path = FGallery/FGalleryPhoto.m; sourceTree = "<group>"; };
-		8882F7641AE4111C00F706F0 /* FGalleryPhotoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FGalleryPhotoView.h; path = FGallery/FGalleryPhotoView.h; sourceTree = "<group>"; };
-		8882F7651AE4111C00F706F0 /* FGalleryPhotoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FGalleryPhotoView.m; path = FGallery/FGalleryPhotoView.m; sourceTree = "<group>"; };
-		8882F7661AE4111C00F706F0 /* FGalleryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FGalleryViewController.h; path = FGallery/FGalleryViewController.h; sourceTree = "<group>"; };
-		8882F7671AE4111C00F706F0 /* FGalleryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FGalleryViewController.m; path = FGallery/FGalleryViewController.m; sourceTree = "<group>"; };
 		8882F7681AE4111C00F706F0 /* photo-gallery-edit-caption.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "photo-gallery-edit-caption.png"; path = "FGallery/photo-gallery-edit-caption.png"; sourceTree = "<group>"; };
 		8882F7691AE4111C00F706F0 /* photo-gallery-left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "photo-gallery-left.png"; path = "FGallery/photo-gallery-left.png"; sourceTree = "<group>"; };
 		8882F76A1AE4111C00F706F0 /* photo-gallery-left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "photo-gallery-left@2x.png"; path = "FGallery/photo-gallery-left@2x.png"; sourceTree = "<group>"; };
@@ -88,6 +83,14 @@
 		889AE24D1AE4144500782F69 /* Simon_Clearfork_View_08_2015_04_10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Simon_Clearfork_View_08_2015_04_10.jpg; sourceTree = "<group>"; };
 		889AE24E1AE4144500782F69 /* Simon_Clearfork_View_09_2015_04_10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Simon_Clearfork_View_09_2015_04_10.jpg; sourceTree = "<group>"; };
 		889AE24F1AE4144500782F69 /* Simon_Clearfork_View_10_2015_04_10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Simon_Clearfork_View_10_2015_04_10.jpg; sourceTree = "<group>"; };
+		889AE25A1AE4166000782F69 /* ATExternalScreenController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATExternalScreenController.h; sourceTree = "<group>"; };
+		889AE25B1AE4166000782F69 /* ATExternalScreenController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ATExternalScreenController.m; sourceTree = "<group>"; };
+		889AE25D1AE4613100782F69 /* FGalleryPhoto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FGalleryPhoto.h; path = FGallery/FGalleryPhoto.h; sourceTree = "<group>"; };
+		889AE25E1AE4613100782F69 /* FGalleryPhoto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FGalleryPhoto.m; path = FGallery/FGalleryPhoto.m; sourceTree = "<group>"; };
+		889AE25F1AE4613100782F69 /* FGalleryPhotoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FGalleryPhotoView.h; path = FGallery/FGalleryPhotoView.h; sourceTree = "<group>"; };
+		889AE2601AE4613100782F69 /* FGalleryPhotoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FGalleryPhotoView.m; path = FGallery/FGalleryPhotoView.m; sourceTree = "<group>"; };
+		889AE2611AE4613100782F69 /* FGalleryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FGalleryViewController.h; path = FGallery/FGalleryViewController.h; sourceTree = "<group>"; };
+		889AE2621AE4613100782F69 /* FGalleryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FGalleryViewController.m; path = FGallery/FGalleryViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,6 +140,8 @@
 				8882F63C1AE3EA1C00F706F0 /* Main.storyboard */,
 				8882F75A1AE3FE0E00F706F0 /* xhMediaViewController.h */,
 				8882F75B1AE3FE0E00F706F0 /* xhMediaViewController.m */,
+				889AE25A1AE4166000782F69 /* ATExternalScreenController.h */,
+				889AE25B1AE4166000782F69 /* ATExternalScreenController.m */,
 				8882F75D1AE3FF7B00F706F0 /* DISTRICT_AERIAL_for_EB_AFTER.mov */,
 				8882F75F1AE40F5300F706F0 /* Trademark_VictoryPark_FinalCut_040114_for_mac_HD_HD.mov */,
 				889AE2461AE4144500782F69 /* Simon_Clearfork_View_01_2015_04_10.jpg */,
@@ -185,12 +190,12 @@
 		8882F7611AE4110C00F706F0 /* FGallery */ = {
 			isa = PBXGroup;
 			children = (
-				8882F7621AE4111C00F706F0 /* FGalleryPhoto.h */,
-				8882F7631AE4111C00F706F0 /* FGalleryPhoto.m */,
-				8882F7641AE4111C00F706F0 /* FGalleryPhotoView.h */,
-				8882F7651AE4111C00F706F0 /* FGalleryPhotoView.m */,
-				8882F7661AE4111C00F706F0 /* FGalleryViewController.h */,
-				8882F7671AE4111C00F706F0 /* FGalleryViewController.m */,
+				889AE25D1AE4613100782F69 /* FGalleryPhoto.h */,
+				889AE25E1AE4613100782F69 /* FGalleryPhoto.m */,
+				889AE25F1AE4613100782F69 /* FGalleryPhotoView.h */,
+				889AE2601AE4613100782F69 /* FGalleryPhotoView.m */,
+				889AE2611AE4613100782F69 /* FGalleryViewController.h */,
+				889AE2621AE4613100782F69 /* FGalleryViewController.m */,
 				8882F7681AE4111C00F706F0 /* photo-gallery-edit-caption.png */,
 				8882F7691AE4111C00F706F0 /* photo-gallery-left.png */,
 				8882F76A1AE4111C00F706F0 /* photo-gallery-left@2x.png */,
@@ -319,12 +324,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				889AE2651AE4613100782F69 /* FGalleryViewController.m in Sources */,
+				889AE2641AE4613100782F69 /* FGalleryPhotoView.m in Sources */,
 				8882F63B1AE3EA1C00F706F0 /* ViewController.m in Sources */,
-				8882F76F1AE4111C00F706F0 /* FGalleryPhotoView.m in Sources */,
 				8882F75C1AE3FE0E00F706F0 /* xhMediaViewController.m in Sources */,
+				889AE25C1AE4166000782F69 /* ATExternalScreenController.m in Sources */,
 				8882F6381AE3EA1C00F706F0 /* AppDelegate.m in Sources */,
-				8882F7701AE4111C00F706F0 /* FGalleryViewController.m in Sources */,
-				8882F76E1AE4111C00F706F0 /* FGalleryPhoto.m in Sources */,
+				889AE2631AE4613100782F69 /* FGalleryPhoto.m in Sources */,
 				8882F6351AE3EA1C00F706F0 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

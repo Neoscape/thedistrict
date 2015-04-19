@@ -15,6 +15,7 @@ static void *const ViewControllerDoppelgangersPrimaryViewController = "ATExterna
 @end
 
 
+
 @implementation ATExternalScreenController {
     __weak UIViewController<ATExternalScreenAwareController> *_primaryViewController;
     __weak UIViewController *_presentedDoppelgangerViewController;
@@ -212,6 +213,15 @@ static ATExternalScreenController *sharedExternalScreenController;
 
 
 @implementation UIViewController (ATExternalScreenController)
+
+-(NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskAll;
+}
+-(BOOL)shouldAutorotate
+{
+    return YES;
+}
 
 - (BOOL)isDoppelganger {
     return [[ATExternalScreenController sharedExternalScreenController] isDoppelgangerViewController:self];

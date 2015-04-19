@@ -7,81 +7,37 @@
 //
 
 #import "FGalleryViewController.h"
+#import "ATExternalScreenController.h"
+//#import "UIView+Toast.h"
+//#import "UIColor+ATExtensions.h"
 
-#define kThumbnailSize 75
-#define kThumbnailSpacing 4
+#define kThumbnailSize 150
+#define kThumbnailSpacing 16
+#define kThumbnailInsetHorizontal 22
+#define kThumbnailInsetVertical 20
 #define kCaptionPadding 3
 #define kToolbarHeight 40
 
 
-@interface FGalleryViewController (Private)
-
-// general
-- (void)buildViews;
-- (void)destroyViews;
-- (void)layoutViews;
-- (void)moveScrollerToCurrentIndexWithAnimation:(BOOL)animation;
-- (void)updateTitle;
-- (void)updateButtons;
-- (void)layoutButtons;
-- (void)updateScrollSize;
-- (void)updateCaption;
-- (void)resizeImageViewsWithRect:(CGRect)rect;
-- (void)resetImageViewZoomLevels;
-
-- (void)enterFullscreen;
-- (void)exitFullscreen;
-- (void)enableApp;
-- (void)disableApp;
-
-- (void)positionInnerContainer;
-- (void)positionScroller;
-- (void)positionToolbar;
-- (void)resizeThumbView;
-
-// thumbnails
-- (void)toggleThumbnailViewWithAnimation:(BOOL)animation;
-- (void)showThumbnailViewWithAnimation:(BOOL)animation;
-- (void)hideThumbnailViewWithAnimation:(BOOL)animation;
-- (void)buildThumbsViewPhotos;
-
-- (void)arrangeThumbs;
-- (void)loadAllThumbViewPhotos;
-
-- (void)preloadThumbnailImages;
-- (void)unloadFullsizeImageWithIndex:(NSUInteger)index;
-
-- (void)scrollingHasEnded;
-
-- (void)handleSeeAllTouch:(id)sender;
-- (void)handleThumbClick:(id)sender;
-
-- (FGalleryPhoto*)createGalleryPhotoForIndex:(NSUInteger)index;
-
-- (void)loadThumbnailImageWithIndex:(NSUInteger)index;
-- (void)loadFullsizeImageWithIndex:(NSUInteger)index;
-
+@interface FGalleryViewController () <ATExternalScreenAwareController>
 @end
 
 
 
 @implementation FGalleryViewController
-@synthesize galleryID;
-@synthesize photoSource = _photoSource;
-@synthesize currentIndex = _currentIndex;
-@synthesize thumbsView = _thumbsView;
-@synthesize toolBar = _toolbar;
-@synthesize useThumbnailView = _useThumbnailView;
-@synthesize startingIndex = _startingIndex;
-@synthesize beginsInThumbnailView = _beginsInThumbnailView;
-@synthesize hideTitle = _hideTitle;
+{
+	FGalleryViewController *_doppelgangerViewController;
+}
 
 #pragma mark - Public Methods
 
+- (BOOL)prefersStatusBarHidden {
+    return YES;
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-	
-    if((self = [super initWithNibName:nil bundle:nil])) {
+	if((self = [super initWithNibName:nil bundle:nil])) {
         
 		// init gallery id with our memory address
 		self.galleryID						= [NSString stringWithFormat:@"%p", self];
@@ -114,29 +70,27 @@
          _scroller.layer.borderWidth = 2.0;
          */
         
+        //        [self.navigationController.navigationBar setFrame:CGRectMake(0.0, 0.0, self.navigationController.navigationBar.frame.size.width, 35.0)];
+        self.navigationController.navigationBar.hidden = YES;
         float systemVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
         if (systemVersion >= 7.0)
         {
             self.edgesForExtendedLayout = UIRectEdgeNone;
-        }
-        
-        if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)])
-        {
-            [self prefersStatusBarHidden];
-            [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+            [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"nav_bar_BG.png"] forBarPosition:UIBarPositionAny
+                                                  barMetrics:UIBarMetricsDefault];
+            [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
+            [[UINavigationBar appearance] setBackgroundColor:[UIColor clearColor]];
         }
         else
         {
-            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+            [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"nav_bar_BG.png"]  forBarMetrics:UIBarMetricsDefault];
+            [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
         }
-
-
+        
 	}
 	return self;
 }
-- (BOOL)prefersStatusBarHidden {
-    return YES;
-}
+
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
 	self = [super initWithCoder:aDecoder];
@@ -195,8 +149,8 @@
     _captionContainer					= [[UIView alloc] initWithFrame:CGRectZero];
     _caption							= [[UILabel alloc] initWithFrame:CGRectZero];
     
-    _toolbar.barStyle					= UIBarStyleBlackTranslucent;
-    _container.backgroundColor			= [UIColor blackColor];
+    //    _toolbar.barStyle					= UIBarStyleBlackTranslucent;
+    _container.backgroundColor			= [UIColor whiteColor];
     
     // listen for container frame changes so we can properly update the layout during auto-rotation or going in and out of fullscreen
     [_container addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
@@ -208,17 +162,17 @@
     _scroller.showsHorizontalScrollIndicator	= NO;
     
     // setup caption
-    _captionContainer.backgroundColor			= [UIColor colorWithWhite:0.0 alpha:0.0]; //Original 0.35
+    _captionContainer.backgroundColor			= [UIColor colorWithRed:133.0/255.0 green:185.0/255.0 blue:217.0/255.0 alpha:1.0];
     _captionContainer.hidden					= YES;
     _captionContainer.userInteractionEnabled	= NO;
     _captionContainer.exclusiveTouch			= YES;
-    _caption.font								= [UIFont systemFontOfSize:14.0];
+    _caption.font								= [UIFont fontWithName:@"futura" size:14.0];
     _caption.textColor							= [UIColor whiteColor];
     _caption.backgroundColor					= [UIColor clearColor];
-    _caption.textAlignment						= NSTextAlignmentCenter;
-    _caption.shadowColor						= [UIColor blackColor];
+    _caption.textAlignment						= NSTextAlignmentLeft;
+    _caption.shadowColor						= [UIColor clearColor];
     _caption.shadowOffset						= CGSizeMake( 1, 1 );
-    _caption.alpha                              = 0.0;
+    
     // make things flexible
     _container.autoresizesSubviews				= NO;
     _innerContainer.autoresizesSubviews			= NO;
@@ -228,7 +182,8 @@
     // setup thumbs view
     _thumbsView.backgroundColor					= [UIColor whiteColor];
     _thumbsView.hidden							= YES;
-    _thumbsView.contentInset					= UIEdgeInsetsMake( kThumbnailSpacing, kThumbnailSpacing, kThumbnailSpacing, kThumbnailSpacing);
+    _thumbsView.contentInset					= UIEdgeInsetsMake( kThumbnailInsetVertical, kThumbnailInsetHorizontal, kThumbnailInsetVertical, kThumbnailInsetHorizontal);
+    _thumbsView.delegate = self;
     
 	// set view
 	self.view                                   = _container;
@@ -238,31 +193,82 @@
 	[_container addSubview:_thumbsView];
 	
 	[_innerContainer addSubview:_scroller];
-	[_innerContainer addSubview:_toolbar];
-	
-	[_toolbar addSubview:_captionContainer];
+//	[_innerContainer addSubview:_toolbar];
+//	[_innerContainer addSubview:_captionContainer];
+    [_toolbar addSubview:_captionContainer];
 	[_captionContainer addSubview:_caption];
 	
 	// create buttons for toolbar
-	UIImage *leftIcon = [UIImage imageNamed:@"photo-gallery-left.png"];
-	UIImage *rightIcon = [UIImage imageNamed:@"photo-gallery-right.png"];
-	_nextButton = [[UIBarButtonItem alloc] initWithImage:rightIcon style:UIBarButtonItemStylePlain target:self action:@selector(next)];
-	_prevButton = [[UIBarButtonItem alloc] initWithImage:leftIcon style:UIBarButtonItemStylePlain target:self action:@selector(previous)];
-	
-	// add prev next to front of the array
-	[_barItems insertObject:_nextButton atIndex:0];
-	[_barItems insertObject:_prevButton atIndex:0];
-	
-	_prevNextButtonSize = leftIcon.size.width;
-	
-	// set buttons on the toolbar.
-	[_toolbar setItems:_barItems animated:NO];
+    UIImage *leftIcon = [UIImage imageNamed:@"photo-gallery-left.png"];
+    UIImage *rightIcon = [UIImage imageNamed:@"photo-gallery-right.png"];
+    _nextButton = [[UIBarButtonItem alloc] initWithImage:rightIcon style:UIBarButtonItemStylePlain target:self action:@selector(next)];
+    _prevButton = [[UIBarButtonItem alloc] initWithImage:leftIcon style:UIBarButtonItemStylePlain target:self action:@selector(previous)];
+    //
+    //	// add prev next to front of the array
+    [_barItems insertObject:_nextButton atIndex:0];
+    [_barItems insertObject:_prevButton atIndex:0];
+    //
+    _prevNextButtonSize = leftIcon.size.width;
+    //
+    //	// set buttons on the toolbar.
+    [_toolbar setItems:_barItems animated:NO];
     
     // build stuff
     [self reloadGallery];
+    
+    //Init Customized Buttons (Back and See all)
+    //    _uib_backButton         = [UIButton buttonWithType:UIButtonTypeSystem];
+    //    _uib_backButton.frame = CGRectMake(20.0, 50.0, 100.0, 50.0);
+    //    [_uib_backButton setTitle:@"Back" forState:UIControlStateNormal];
+    //    [_container addSubview:_uib_backButton];
+    //    [_uib_backButton addTarget:self action:@selector(getBack) forControlEvents:UIControlEventTouchDown];
+    //
 
+    [self enterFullscreen];
+    
+    if (![self isDoppelganger]) {
+        UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+        [closeButton setImage:[UIImage imageNamed:@"grfx_close.png"] forState:UIControlStateNormal];
+        [closeButton setAlpha:1.0];
+        [closeButton addTarget:self action:@selector(at_dismissThisViewController:) forControlEvents:UIControlEventTouchDown];
+        [self.view addSubview:closeButton];
+        
+        _uib_seeAllButton = [UIButton buttonWithType:UIButtonTypeSystem];
+        _uib_seeAllButton.translatesAutoresizingMaskIntoConstraints = NO;
+        [_uib_seeAllButton setTitle:@"THUMBNAILS" forState:UIControlStateNormal];
+        _uib_seeAllButton.tintColor = [UIColor blackColor];
+        [_container addSubview:_uib_seeAllButton];
+        [_uib_seeAllButton addTarget:self action:@selector(seeThumbs) forControlEvents:UIControlEventTouchDown];
+
+        NSDictionary *views = @{@"closeButton": closeButton, @"thumbnailButton": _uib_seeAllButton};
+        [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[thumbnailButton]-30-[closeButton]" options:NSLayoutFormatAlignAllTop|NSLayoutFormatAlignAllBottom metrics:nil views:views]];
+        [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[closeButton(==37)]-10-|" options:0 metrics:nil views:views]];
+        [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-10-[closeButton(==37)]" options:0 metrics:nil views:views]];
+    }
 }
 
+-(void)getBack
+{
+    [self.navigationController.presentingViewController at_dismissViewControllerAnimated:YES completion:^{}];
+}
+
+-(void)seeThumbs
+{
+    // show thumb view
+    [self toggleThumbnailViewWithAnimation:YES];
+    
+    // tell thumbs that havent loaded to load
+    [self loadAllThumbViewPhotos];
+    
+    //    [_uib_seeAllButton setTitle:@"Close" forState:UIControlStateNormal];
+    //    [_uib_seeAllButton removeTarget:self action:@selector(seeThumbs) forControlEvents:UIControlEventTouchDown];
+}
+
+-(void)closeThumbs
+{
+    
+}
 
 - (void)viewDidUnload {
     
@@ -275,9 +281,12 @@
     [_innerContainer release], _innerContainer = nil;
     [_scroller release], _scroller = nil;
     [_thumbsView release], _thumbsView = nil;
-    [_toolbar release], _toolbar = nil;
+    //    [_toolbar release], _toolbar = nil;
     [_captionContainer release], _captionContainer = nil;
     [_caption release], _caption = nil;
+    
+    [_uib_seeAllButton release], _uib_seeAllButton = nil;
+    [_uib_backButton release], _uib_backButton = nil;
     
     [super viewDidUnload];
 }
@@ -337,14 +346,14 @@
 
 - (FGalleryPhoto*)currentPhoto
 {
-    return [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", _currentIndex]];
+    return [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", (int)_currentIndex]];
 }
 
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-	
+
     _isActive = YES;
     
     self.useThumbnailView = _useThumbnailView;
@@ -358,28 +367,68 @@
 	[self layoutViews];
 	
 	// update status bar to be see-through
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent animated:animated];
-	
+	[[UIApplication sharedApplication] setStatusBarHidden:YES];
 	// init with next on first run.
 	if( _currentIndex == -1 ) [self next];
 	else [self gotoImageByIndex:_currentIndex animated:NO];
 	
 	// eb addition
-	// [self exitFullscreen];
-	self.toolBar.hidden = YES;
-	_isFullscreen=YES;
+	[self exitFullscreen];
+	
+	[[ATExternalScreenController sharedExternalScreenController] viewWillAppear:animated forViewController:self];
+    
+    //if (![[NSUserDefaults standardUserDefaults] boolForKey:@"GalleryLaunchedOnce"])
+    //{
+    //    [self.view makeToast:@"Pinch and Zoom is enabled.\nSwipe left/right for more images."
+    //                duration:5.0
+    //                position:CSToastPositionBottom
+    //                   title:nil];
+    //}
 }
 
+/* // causes crash
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [[ATExternalScreenController sharedExternalScreenController] viewDidAppear:animated forViewController:self];
+}
+*/
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
 	_isActive = NO;
-    
 	[[UIApplication sharedApplication] setStatusBarStyle:_prevStatusStyle animated:animated];
+	[[ATExternalScreenController sharedExternalScreenController] viewWillDisappear:animated forViewController:self];
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"GalleryLaunchedOnce"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [[ATExternalScreenController sharedExternalScreenController] viewDidDisappear:animated forViewController:self];
+}
+
+#pragma mark - External screen
+
+- (UIViewController *)doppelgangerViewController {
+    if (_doppelgangerViewController == nil) {
+        _doppelgangerViewController = [[FGalleryViewController alloc] initWithPhotoSource:self.photoSource];
+        _doppelgangerViewController.startingIndex = self.startingIndex;
+    }
+    return _doppelgangerViewController;
+}
+
+- (void)configureDoppelgangerViewController {
+    NSArray *doppelViews = _doppelgangerViewController->_photoViews;
+    [_photoViews enumerateObjectsUsingBlock:^(FGalleryPhotoView *view, NSUInteger idx, BOOL *stop) {
+        FGalleryPhotoView *doppelView = doppelViews[idx];
+        view.doppelgangerView = doppelView;
+    }];
+}
+
+- (void)doppelgangerViewControllerDidLayoutSubviews {
+    [self layoutViews];
+}
 
 - (void)resizeImageViewsWithRect:(CGRect)rect
 {
@@ -410,7 +459,7 @@
 	// remove the image and thumbnail at the specified index.
 	FGalleryPhotoView *imgView = [_photoViews objectAtIndex:index];
  	FGalleryPhotoView *thumbView = [_photoThumbnailViews objectAtIndex:index];
-	FGalleryPhoto *photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i",index]];
+	FGalleryPhoto *photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i",(int)index]];
 	
 	[photo unloadFullsize];
 	[photo unloadThumbnail];
@@ -420,7 +469,7 @@
 	
 	[_photoViews removeObjectAtIndex:index];
 	[_photoThumbnailViews removeObjectAtIndex:index];
-	[_photoLoaders removeObjectForKey:[NSString stringWithFormat:@"%i",index]];
+	[_photoLoaders removeObjectForKey:[NSString stringWithFormat:@"%i",(int)index]];
 	
 	[self layoutViews];
 	[self updateButtons];
@@ -482,64 +531,88 @@
 	[self updateCaption];
 }
 
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    [[ATExternalScreenController sharedExternalScreenController] viewDidLayoutSubviewsForViewController:self];
+}
 
 - (void)layoutViews
 {
-	[self positionInnerContainer];
-	[self positionScroller];
+    _innerContainer.frame = self.view.bounds;
+    _scroller.frame = self.view.bounds;
+
 	[self resizeThumbView];
-	[self positionToolbar];
+//	[self positionToolbar];
 	[self updateScrollSize];
-	[self updateCaption];
+//	[self updateCaption];
 	[self resizeImageViewsWithRect:_scroller.frame];
-	[self layoutButtons];
+//	[self layoutButtons];
 	[self arrangeThumbs];
 	[self moveScrollerToCurrentIndexWithAnimation:NO];
+    
+    [self positionCaption];
 }
 
 
 - (void)setUseThumbnailView:(BOOL)useThumbnailView
 {
     
-    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: NSLocalizedString(@"Back", @"") style: UIBarButtonItemStyleBordered target: self action: @selector(getBack)];
+    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: NSLocalizedString(@"BACK", @"") style: UIBarButtonItemStyleBordered target: self action: @selector(getBack) ];
+    [newBackButton setTitleTextAttributes:@{ NSFontAttributeName: [UIFont systemFontOfSize:17.0], NSForegroundColorAttributeName: [UIColor blackColor]} forState:UIControlStateNormal];
 //    [[self navigationItem] setBackBarButtonItem: newBackButton];
-    self.navigationItem.leftBarButtonItem = newBackButton;
-    [newBackButton release];
+//    UIBarButtonItem *leftSpacer = [[UIBarButtonItem alloc]
+//                                   initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+//                                   target:nil action:nil];
+//    leftSpacer.width = 100;
+    //    [self.navigationItem setLeftBarButtonItems:[NSArray arrayWithObjects:leftSpacer, newBackButton, nil] animated:NO];
+    [self.navigationItem setLeftBarButtonItem:newBackButton];
+    
+//    UIButton *uib_back = [UIButton buttonWithType:UIButtonTypeCustom];
+//    [uib_back setFrame:CGRectMake(10.0, 17.0, 180.0, 20.0)];
+//    [uib_back setTitle:@"BACK" forState:UIControlStateNormal];
+//    uib_back.titleLabel.font = [UIFont systemFontOfSize:17.0];
+//    [uib_back setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+//    [uib_back addTarget:self action:@selector(getBack) forControlEvents:UIControlEventTouchDown];
+//    [self.navigationController.navigationBar addSubview:uib_back];
+    
     
     _useThumbnailView = useThumbnailView;
     if( self.navigationController ) {
-        
         if (_useThumbnailView) {
-            UIBarButtonItem *btn = [[[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"See all", @"") style:UIBarButtonItemStylePlain target:self action:@selector(handleSeeAllTouch:)] autorelease];
+//            _uib_seeAllRightItem = [[[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"SEE ALL", @"") style:UIBarButtonItemStyleBordered target:self action:@selector(handleSeeAllTouch:)] autorelease];
+//            [_uib_seeAllRightItem setTitleTextAttributes:@{ UITextAttributeFont: [UIFont systemFontOfSize:17.0], UITextAttributeTextColor: [UIColor blackColor]} forState:UIControlStateNormal];
+//            UIBarButtonItem *rightSpacer = [[UIBarButtonItem alloc]
+//                                            initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+//                                            target:nil action:nil];
+//            rightSpacer.width = 100;
+            //            [self.navigationItem setRightBarButtonItems:[NSArray arrayWithObjects:rightSpacer, _uib_seeAllRightItem, nil] animated:NO];
+            //            [self.navigationItem setRightBarButtonItem:btn animated:YES];
+#if 0
+            _uib_seeAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            [_uib_seeAllButton setFrame:CGRectMake(880, 17, 150, 20)];
+            [_uib_seeAllButton setTitle:@"SEE ALL" forState:UIControlStateNormal];
+            _uib_seeAllButton.titleLabel.font = [UIFont systemFontOfSize:17.0];
+            [_uib_seeAllButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [_uib_seeAllButton addTarget:self action:@selector(handleSeeAllTouch:) forControlEvents:UIControlEventTouchDown];
+            [self.navigationController.navigationBar addSubview:_uib_seeAllButton];
+#endif
+//            [self.navigationItem setRightBarButtonItem:_uib_seeAllRightItem];
             
-            uib_share = [[[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Email", @"") style:UIBarButtonItemStylePlain target:self action:@selector(handleEmailTouch:)] autorelease];
-            uib_share = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(handleEmailTouch:)] autorelease];
-            
-           self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:btn, uib_share, nil];
-             self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:btn, nil];
         }
         else {
+#if 0
             [self.navigationItem setRightBarButtonItem:nil animated:NO];
+#endif
         }
     }
+    
+    [newBackButton release];
 }
-#pragma mark - Handle Back Button
--(void)getBack {
-    [[NSNotificationCenter defaultCenter]
-     postNotificationName:@"unhideBar"
-     object:self];
-    [self.parentViewController.view removeFromSuperview];
-    [self.parentViewController removeFromParentViewController];
-    [[NSNotificationCenter defaultCenter]
-     postNotificationName:@"hideStatusBar"
-     object:self];
-}
-#pragma mark - Handle Share Function
 
--(void)handleEmailTouch:(id)sender {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:@"SHARE" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Email Screenshot", @"Save Screenshot", nil];
-    [actionSheet showInView:self.view];
-}
 
 #pragma mark - Private Methods
 
@@ -550,115 +623,6 @@
 		[self layoutViews];
 	}
 }
-#pragma mark - ActionSheet Delegate
-- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
-    switch (buttonIndex) {
-        case 0:
-            [self mailScreenshot];
-            break;
-        case 1:
-            [self saveButtonClicked];
-            break;
-        default:
-            break;
-    }
-}
-
-#pragma mark - Take screen shot & Share
-//-(void)prepareScreenShot {
-//    _container.backgroundColor			= [UIColor whiteColor];
-//    [self performSelector:@selector(takeScreenShot) withObject:nil afterDelay:0.5];
-//}
--(void)takeScreenShot {
-    
-    CGPoint offset=_scroller.contentOffset;
-    int index = offset.x/1024;
-    FGalleryPhotoView *photoView = [_photoViews objectAtIndex:index];
-    photoView.backgroundColor = [UIColor whiteColor];
-    CGRect rect = photoView.imageView.frame;
-    UIGraphicsBeginImageContextWithOptions(rect.size,YES,0.0f);
-    
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    [photoView.layer renderInContext:context];
-    UIImage *capturedImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    NSData* dataImg = UIImageJPEGRepresentation(capturedImage, 1.0);
-    data = dataImg;
-    photoView.backgroundColor = [UIColor blackColor];
-}
-
--(void)mailScreenshot {
-//    [self takeScreenShot];
-//    
-//    embEmailData *emailData = [[embEmailData alloc] init];
-//    emailData.to = nil;
-//    emailData.subject = @"1325 Boylston Street";
-//    emailData.body = nil;//kMAILBODY;
-//    UIImage *img = [UIImage imageWithData:data];
-//    emailData.attachment = @[img];
-}
-
--(void)saveButtonClicked {
-    [self takeScreenShot];
-    UIImage *img = [UIImage imageWithData:data];
-    UIImageWriteToSavedPhotosAlbum(img, self, @selector(savedPhotoImage:didFinishSavingWithError:contextInfo:), NULL);
-}
--(void) savedPhotoImage:(UIImage *)image
-didFinishSavingWithError:(NSError *)error
-            contextInfo:(void *)contextInfo
-{
-    NSString *message = @"This image has been saved to your Photos album";
-    if (error) {
-        message = [error localizedDescription];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Gallery Unavailable!" message:[NSString stringWithFormat:@"Go To Settings --> Privacy -->Photos To Fix!"]
-                                                       delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-        [alert show];
-        return;
-    }
-    else{
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Congratulations!" message:[NSString stringWithFormat:@"Current Image is successfully saved in your device!"]
-                                                       delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-        [alert show];
-    }
-}
-
-
-
-- (void)positionInnerContainer
-{
-	CGRect screenFrame = [[UIScreen mainScreen] bounds];
-	CGRect innerContainerRect;
-	
-//	if( self.interfaceOrientation == UIInterfaceOrientationPortrait || self.interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown )
-//	{//portrait
-//		innerContainerRect = CGRectMake( 0, _container.frame.size.height - screenFrame.size.height, _container.frame.size.width, screenFrame.size.height );
-//	}
-//	else
-//	{// landscape
-//		innerContainerRect = CGRectMake( 0, _container.frame.size.height - screenFrame.size.width, _container.frame.size.width, screenFrame.size.width );
-//	}
-	
-	_innerContainer.frame = [self.view bounds];
-}
-
-
-- (void)positionScroller
-{
-	//CGRect screenFrame = [[UIScreen mainScreen] bounds];
-	CGRect scrollerRect;
-	
-//	if( self.interfaceOrientation == UIInterfaceOrientationPortrait || self.interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown )
-//	{//portrait
-//		scrollerRect = [self.view bounds];
-//	}
-//	else
-//	{//landscape
-		scrollerRect = [self.view bounds];
-//	}
-	
-	_scroller.frame = scrollerRect;
-}
 
 
 - (void)positionToolbar
@@ -666,6 +630,10 @@ didFinishSavingWithError:(NSError *)error
 	_toolbar.frame = CGRectMake( 0, _scroller.frame.size.height-kToolbarHeight, _scroller.frame.size.width, kToolbarHeight );
 }
 
+- (void)positionCaption
+{
+    _captionContainer.frame = CGRectMake( 0, _scroller.frame.size.height-kToolbarHeight, _scroller.frame.size.width, kToolbarHeight );
+}
 
 - (void)resizeThumbView
 {
@@ -715,10 +683,10 @@ didFinishSavingWithError:(NSError *)error
     
 	UIApplication* application = [UIApplication sharedApplication];
 	if ([application respondsToSelector: @selector(setStatusBarHidden:withAnimation:)]) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade]; // 3.2+
+		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade]; // 3.2+
 	} else {
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-		[[UIApplication sharedApplication] setStatusBarHidden:NO animated:NO]; // 2.0 - 3.2
+		[[UIApplication sharedApplication] setStatusBarHidden:YES animated:NO]; // 2.0 - 3.2
 #pragma GCC diagnostic warning "-Wdeprecated-declarations"
 	}
     
@@ -775,17 +743,18 @@ didFinishSavingWithError:(NSError *)error
 			if([caption length] > 0 )
 			{
 				float captionWidth = _container.frame.size.width-kCaptionPadding*2;
-				CGSize textSize = [caption sizeWithFont:_caption.font];
+                CGSize textSize = [caption sizeWithAttributes:@{NSFontAttributeName : _caption.font}];
 				NSUInteger numLines = ceilf( textSize.width / captionWidth );
 				NSInteger height = ( textSize.height + kCaptionPadding ) * numLines;
 				
 				_caption.numberOfLines = numLines;
 				_caption.text = caption;
 				
-				NSInteger containerHeight = height+kCaptionPadding*2;
-				_captionContainer.frame = CGRectMake(0, -containerHeight, _container.frame.size.width, containerHeight );
-				_caption.frame = CGRectMake(kCaptionPadding, kCaptionPadding, captionWidth, height );
-				
+                //				NSInteger containerHeight = height+kCaptionPadding*2;
+                //				_captionContainer.frame = CGRectMake(0, -containerHeight, _container.frame.size.width, containerHeight );
+                _captionContainer.frame = CGRectMake( 0, _scroller.frame.size.height-kToolbarHeight, _scroller.frame.size.width, kToolbarHeight );
+				_caption.frame = CGRectMake(125, (kToolbarHeight-height)/2, captionWidth, height );
+                
 				// show caption bar
 				_captionContainer.hidden = NO;
 			}
@@ -802,14 +771,28 @@ didFinishSavingWithError:(NSError *)error
 - (void)updateScrollSize
 {
 	float contentWidth = _scroller.frame.size.width * [_photoSource numberOfPhotosForPhotoGallery:self];
-	[_scroller setContentSize:CGSizeMake(contentWidth, _scroller.frame.size.height)];
+	[_scroller setContentSize:CGSizeMake(contentWidth, 768)];//_scroller.frame.size.height)];
 }
 
 
 - (void)updateTitle
 {
     if (!_hideTitle){
-        [self setTitle:[NSString stringWithFormat:@"%i %@ %i", _currentIndex+1, NSLocalizedString(@"of", @"") , [_photoSource numberOfPhotosForPhotoGallery:self]]];
+        [self setTitle:[NSString stringWithFormat:@"%i %@ %i", (int)_currentIndex+1, NSLocalizedString(@"of", @"") , [_photoSource numberOfPhotosForPhotoGallery:self]]];
+        
+        UILabel* titleLabel=[[UILabel alloc] initWithFrame:CGRectMake(0,0, 200, 40)];
+        titleLabel.text=self.navigationItem.title;
+        titleLabel.textColor=[UIColor blackColor];
+        titleLabel.backgroundColor =[UIColor clearColor];
+        titleLabel.adjustsFontSizeToFitWidth=YES;
+        titleLabel.textAlignment= NSTextAlignmentCenter;
+        [titleLabel sizeToFit];
+//        titleLabel.font = [UIFont fontWithName:@"Futura" size:18.0];
+        titleLabel.font = [UIFont systemFontOfSize:18.0];
+        self.navigationItem.titleView=titleLabel;
+        CGFloat verticalOffset = 3;
+        [[UINavigationBar appearance] setTitleVerticalPositionAdjustment:verticalOffset forBarMetrics:UIBarMetricsDefault];
+        
     }else{
         [self setTitle:@""];
     }
@@ -921,10 +904,12 @@ didFinishSavingWithError:(NSError *)error
 - (void)showThumbnailViewWithAnimation:(BOOL)animation
 {
     _isThumbViewShowing = YES;
-    [uib_share setEnabled:NO];
-    [self arrangeThumbs];
-    [self.navigationItem.rightBarButtonItem setTitle:NSLocalizedString(@"Close", @"")];
     
+    [self arrangeThumbs];
+    
+    //    [self.navigationItem.rightBarButtonItem setTitle:NSLocalizedString(@"CLOSE", @"")];
+    //    [_uib_seeAllRightItem setTitle:NSLocalizedString(@"CLOSE", @"")];
+    _uib_seeAllButton.selected = YES;
     if (animation) {
         // do curl animation
         [UIView beginAnimations:@"uncurl" context:nil];
@@ -942,9 +927,9 @@ didFinishSavingWithError:(NSError *)error
 - (void)hideThumbnailViewWithAnimation:(BOOL)animation
 {
     _isThumbViewShowing = NO;
-    [uib_share setEnabled:YES];
-    [self.navigationItem.rightBarButtonItem setTitle:NSLocalizedString(@"See all", @"")];
-    
+    //    [self.navigationItem.rightBarButtonItem setTitle:NSLocalizedString(@"SEE ALL", @"")];
+    //    [_uib_seeAllRightItem setTitle:NSLocalizedString(@"SEE ALL", @"")];
+    _uib_seeAllButton.selected = NO;
     if (animation) {
         // do curl animation
         [UIView beginAnimations:@"curl" context:nil];
@@ -996,12 +981,12 @@ didFinishSavingWithError:(NSError *)error
 	FGalleryPhoto *photo;
 	
 	// check to see if the current image thumb has been loaded
-	photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", index]];
+	photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", (int)index]];
 	
 	if( !photo )
 	{
 		[self loadThumbnailImageWithIndex:index];
-		photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", index]];
+		photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", (int)index]];
 	}
 	
 	if( !photo.hasThumbLoaded && !photo.isThumbLoading )
@@ -1012,11 +997,11 @@ didFinishSavingWithError:(NSError *)error
 	NSUInteger curIndex = prevIndex;
 	while( curIndex > -1 && curIndex > prevIndex - preloadCount )
 	{
-		photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", curIndex]];
+		photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", (int)curIndex]];
 		
 		if( !photo ) {
 			[self loadThumbnailImageWithIndex:curIndex];
-			photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", curIndex]];
+			photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", (int)curIndex]];
 		}
 		
 		if( !photo.hasThumbLoaded && !photo.isThumbLoading )
@@ -1030,11 +1015,11 @@ didFinishSavingWithError:(NSError *)error
 	curIndex = nextIndex;
 	while( curIndex < count && curIndex < nextIndex + preloadCount )
 	{
-		photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", curIndex]];
+		photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", (int)curIndex]];
 		
 		if( !photo ) {
 			[self loadThumbnailImageWithIndex:curIndex];
-			photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", curIndex]];
+			photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", (int)curIndex]];
 		}
 		
 		if( !photo.hasThumbLoaded && !photo.isThumbLoading )
@@ -1059,7 +1044,7 @@ didFinishSavingWithError:(NSError *)error
 
 - (void)loadThumbnailImageWithIndex:(NSUInteger)index
 {
-	FGalleryPhoto *photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", index]];
+	FGalleryPhoto *photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", (int)index]];
 	
 	if( photo == nil )
 		photo = [self createGalleryPhotoForIndex:index];
@@ -1070,7 +1055,7 @@ didFinishSavingWithError:(NSError *)error
 
 - (void)loadFullsizeImageWithIndex:(NSUInteger)index
 {
-	FGalleryPhoto *photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", index]];
+	FGalleryPhoto *photo = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", (int)index]];
 	
 	if( photo == nil )
 		photo = [self createGalleryPhotoForIndex:index];
@@ -1082,7 +1067,7 @@ didFinishSavingWithError:(NSError *)error
 - (void)unloadFullsizeImageWithIndex:(NSUInteger)index
 {
 	if (index < [_photoViews count]) {
-		FGalleryPhoto *loader = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", index]];
+		FGalleryPhoto *loader = [_photoLoaders objectForKey:[NSString stringWithFormat:@"%i", (int)index]];
 		[loader unloadFullsize];
 		
 		FGalleryPhotoView *photoView = [_photoViews objectAtIndex:index];
@@ -1120,7 +1105,7 @@ didFinishSavingWithError:(NSError *)error
 	photo.tag = index;
 	
 	// store it
-	[_photoLoaders setObject:photo forKey: [NSString stringWithFormat:@"%i", index]];
+	[_photoLoaders setObject:photo forKey: [NSString stringWithFormat:@"%i", (int)index]];
 	
 	return photo;
 }
@@ -1207,7 +1192,9 @@ didFinishSavingWithError:(NSError *)error
 		photoView.imageView.image = photo.fullsize;
 	}
 	// otherwise, we don't need to keep this image around
-	else [photo unloadFullsize];
+    else {
+        [photo unloadFullsize];
+    }
 }
 
 
@@ -1216,12 +1203,28 @@ didFinishSavingWithError:(NSError *)error
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-	_isScrolling = YES;
+    if (scrollView == _scroller) {
+        _isScrolling = YES;
+    }
+    if(_doppelgangerViewController) {
+        ATSyncHorizontallyPagedScrollViews(_scroller, _doppelgangerViewController->_scroller, NO);
+        ATSyncScrollViews(_thumbsView, _doppelgangerViewController->_thumbsView);
+    }
+}
+
+- (void)scrollViewDidZoom:(UIScrollView *)scrollView {
+    if(_doppelgangerViewController) {
+        ATSyncScrollViews(_thumbsView, _doppelgangerViewController->_thumbsView);
+    }
 }
 
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
+    if (scrollView != _scroller) {
+        return;
+    }
+    
 	if( !decelerate )
 	{
 		[self scrollingHasEnded];
@@ -1234,6 +1237,12 @@ didFinishSavingWithError:(NSError *)error
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
+    if (_doppelgangerViewController) {
+        [_doppelgangerViewController scrollingHasEnded];
+    }
+    if (scrollView != _scroller) {
+        return;
+    }
 	[self scrollingHasEnded];
 }
 
@@ -1440,7 +1449,6 @@ didFinishSavingWithError:(NSError *)error
 		}
 	}
 }
-
 
 @end
 

@@ -7,6 +7,8 @@
 //
 
 #import "FGalleryPhotoView.h"
+#import "ATExternalScreenController.h"
+
 
 @interface FGalleryPhotoView (Private)
 - (UIImage*)createHighlightImageWithFrame:(CGRect)rect;
@@ -23,12 +25,10 @@
 @synthesize activity = _activity;
 @synthesize button = _button;
 
-- (BOOL)prefersStatusBarHidden {
-    return YES;
-}
+
 - (id)initWithFrame:(CGRect)frame
 {
-    self = [super initWithFrame:frame];
+	self = [super initWithFrame:frame];
 	
 	self.userInteractionEnabled = YES;
 	self.clipsToBounds = YES;
@@ -218,10 +218,18 @@
 	return imageView;
 }
 
-- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(float)scale
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale
 {
 	if( self.zoomScale == self.minimumZoomScale ) _isZoomed = NO;
 	else _isZoomed = YES;
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self syncToDoppelganger];
+}
+
+- (void)syncToDoppelganger {
+    ATSyncScrollViews(self, _doppelgangerView);
 }
 
 

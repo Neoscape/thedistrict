@@ -100,8 +100,8 @@
         [myAVPlayer play];
         NSLog(@"Should repeat the movie!!");
     }
-    else
-        return;
+   
+    [self.delegate didRemoveFromSuperView:self];
 }
 
 - (void)createTopContainer
