@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>1B49B885-BC77-48AE-9312-BE3987C3516F</string>
 	<key>IDESourceControlProjectName</key>
-	<string>thedistrict</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>A728B458D03DA967810F74AB1BD00AA75F571B40</key>
 		<string>https://github.com/Neoscape/thedistrict.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>thedistrict.xcodeproj</string>
+	<string>thedistrict.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>A728B458D03DA967810F74AB1BD00AA75F571B40</key>
